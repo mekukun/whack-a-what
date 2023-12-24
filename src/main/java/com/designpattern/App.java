@@ -93,8 +93,6 @@ public class App extends Application {
         // Create the "Start" button Container
         Button startButton = new Button("Start");
 
-        // ---------------------------------------------------------------------------------------
-
         // Populate screen w/ containers
         screen.getChildren().addAll(b, nameInputBox, hbox, startButton);
 
@@ -103,6 +101,8 @@ public class App extends Application {
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
+
+        // ---------------------------------------------------------------------------------------
 
         // Actual Play Game Scene
         StackPane sp = new StackPane();
