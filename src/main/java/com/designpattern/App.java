@@ -4,8 +4,15 @@ import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -14,7 +21,13 @@ import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -32,10 +45,71 @@ public class App extends Application {
 
         stage.setTitle("Whack-a-what");
 
+        // Initial Game Scene
+        VBox screen = new VBox(20); // spacing = 8
+        screen.setAlignment(Pos.CENTER); // Center nodes vertically
+        screen.setPadding(new Insets(0, 30, 0, 30));
+
+        // Title Container
+        Label b = new Label("Whack-a-what?");
+        b.setFont(Font.font("Arial", FontWeight.BOLD, 24)); // Set font size and weight
+
+        // Name Input Container
+        VBox nameInputBox = new VBox(8); // spacing = 8
+        nameInputBox.setAlignment(Pos.CENTER); // Center nodes vertically
+
+        // Name label
+        Label name = new Label("Name"); // spacing = 8
+        name.setFont(Font.font("Arial", FontWeight.BOLD, 14)); // Set font size and weight
+
+        // Name text input
+        TextField textField = new TextField();
+        // Center text content horizontally
+        textField.setAlignment(Pos.CENTER);
+
+        // Populate inside the Name Input Container
+        nameInputBox.getChildren().addAll(name, textField);
+
+        // Choose Your Mole Container
+        HBox hbox = new HBox(); // Create an HBox
+        hbox.setSpacing(10); // Set spacing between elements
+        // Center elements both vertically and horizontally
+        hbox.setAlignment(Pos.CENTER);
+
+        // Label for "Choose your mole"
+        Label chooseMoleLabel = new Label("Choose your mole :");
+        chooseMoleLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14)); // Set font properties for label
+
+        // Create a ComboBox with three options
+        ComboBox<String> moleOptions = new ComboBox<>();
+        moleOptions.getItems().addAll("Bookworm Mole", "Foodie Mole", "Adventurous Mole"); // Add your desired options
+
+        // Set Bookworm Mole as the default value
+        moleOptions.setValue("Bookworm Mole");
+
+        // Add elements to the HBox
+        hbox.getChildren().addAll(chooseMoleLabel, moleOptions);
+
+        // Create the "Start" button Container
+        Button startButton = new Button("Start");
+
+        // ---------------------------------------------------------------------------------------
+
+        // Populate screen w/ containers
+        screen.getChildren().addAll(b, nameInputBox, hbox, startButton);
+
+        // // Start Actual Game Scene
+        scene = new Scene(screen, 400, 300);
+        stage.setScene(scene);
+        stage.setResizable(false);
+        stage.show();
+
+        // Actual Play Game Scene
         StackPane sp = new StackPane();
 
         StackPane pestLayer = new StackPane();
 
+        // 1st layer of the stackpane (the most back)
         sp.getChildren().add(pestLayer);
 
         Image image = new Image(App.class.getResource("images/background.png").toExternalForm());
@@ -56,6 +130,7 @@ public class App extends Application {
         iv.setTranslateX(0);
         iv.setTranslateY(300);
 
+        // 2nd layer
         sp.getChildren().add(iv);
 
         Image i = new Image(App.class.getResource("images/sofa.png").toExternalForm());
@@ -69,6 +144,7 @@ public class App extends Application {
         iv1.setTranslateX(200);
         iv1.setTranslateY(150);
 
+        // 3rd layer
         sp.getChildren().add(iv1);
 
         Image i2 = new Image(App.class.getResource("images/cabinet.png").toExternalForm());
@@ -82,6 +158,7 @@ public class App extends Application {
         iv2.setTranslateX(-300);
         iv2.setTranslateY(160);
 
+        // 4th layer
         sp.getChildren().add(iv2);
 
         Image i3 = new Image(App.class.getResource("images/lamp.png").toExternalForm());
@@ -95,6 +172,7 @@ public class App extends Application {
         iv3.setTranslateX(-300);
         iv3.setTranslateY(-25);
 
+        // 5th layer
         sp.getChildren().add(iv3);
 
         Image i4 = new Image(App.class.getResource("images/clock.png").toExternalForm());
@@ -108,12 +186,23 @@ public class App extends Application {
         iv4.setTranslateX(0);
         iv4.setTranslateY(-130);
 
+        // 6th layer
         sp.getChildren().add(iv4);
 
-        scene = new Scene(sp, 1200, 860);
-        stage.setScene(scene);
-        stage.setResizable(false);
-        stage.show();
+        // Start Actual Game Scene
+        // Add a click event handler to the button
+        startButton.setOnAction(event -> {
+            scene = new Scene(sp, 1200, 860);
+            stage.setScene(scene);
+            stage.setResizable(false);
+
+            // Center the stage on the screen
+            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+            stage.setX((screenBounds.getWidth() - stage.getWidth()) / 2);
+            stage.setY((screenBounds.getHeight() - stage.getHeight()) / 2);
+
+            stage.show();
+        });
 
         Image i5 = new Image(App.class.getResource("images/snake.png").toExternalForm());
 
@@ -153,6 +242,7 @@ public class App extends Application {
             }
         });
 
+        // Put snake ImageView into the first layer
         pestLayer.getChildren().add(iv5);
     }
 
