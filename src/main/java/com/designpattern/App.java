@@ -12,10 +12,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
@@ -23,8 +25,13 @@ import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Screen;
@@ -109,6 +116,25 @@ public class App extends Application {
 
         StackPane pestLayer = new StackPane();
 
+        TextArea textBox = new TextArea();
+        StackPane.setMargin(textBox, new Insets(750, 700, 0, 0)); // Adjust values as needed
+        StackPane.setAlignment(textBox, Pos.BOTTOM_LEFT);
+        textBox.getStyleClass().add("text-area");
+        appendText(textBox, "This is the first line.\n");
+        appendText(textBox, "This is the second line.\n");
+        appendText(textBox, "This is the third line.\n");
+        appendText(textBox, "This is the third line.\n");
+        appendText(textBox, "This is the third line.\n");
+        appendText(textBox, "This is the third line.\n");
+        appendText(textBox, "This is the third line.\n");
+        appendText(textBox, "Hi lol.");
+
+        // Limit lines to 5 and make scrollable
+        textBox.setWrapText(true); // Enable text wrapping
+
+        // Optional: Disable editing if needed
+        textBox.setEditable(false);
+
         // 1st layer of the stackpane (the most back)
         sp.getChildren().add(pestLayer);
 
@@ -189,10 +215,14 @@ public class App extends Application {
         // 6th layer
         sp.getChildren().add(iv4);
 
+        // 7th layer
+        sp.getChildren().add(textBox);
+
         // Start Actual Game Scene
         // Add a click event handler to the button
         startButton.setOnAction(event -> {
             scene = new Scene(sp, 1200, 860);
+            scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
             stage.setScene(scene);
             stage.setResizable(false);
 
@@ -244,6 +274,13 @@ public class App extends Application {
 
         // Put snake ImageView into the first layer
         pestLayer.getChildren().add(iv5);
+    }
+
+    // Method to append text to the TextArea and scroll to the end
+    private void appendText(TextArea textArea, String text) {
+        textArea.appendText(text);
+        // Set the caret position to the end
+        textArea.positionCaret(textArea.getLength());
     }
 
     // static void setRoot(String fxml) throws IOException {
