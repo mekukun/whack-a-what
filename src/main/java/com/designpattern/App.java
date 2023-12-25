@@ -5,14 +5,10 @@ import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -21,21 +17,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.LinearGradient;
-import javafx.scene.paint.Stop;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Popup;
@@ -44,6 +33,9 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.IOException;
+
+import com.designpattern.Singleton.Game;
+import com.designpattern.Singleton.Logger;
 
 /**
  * JavaFX App
@@ -119,20 +111,14 @@ public class App extends Application {
 
         // Actual Play Game Scene
         StackPane sp = new StackPane();
+        sp.setId("globalPane");
 
         StackPane pestLayer = new StackPane();
 
         TextArea textBox = new TextArea();
+        textBox.setId("loggingBox");
         StackPane.setMargin(textBox, new Insets(750, 800, 10, 10)); // Adjust values as needed
         textBox.getStyleClass().add("text-area");
-        appendText(textBox, "This is the first line.\n");
-        appendText(textBox, "This is the second line.\n");
-        appendText(textBox, "This is the third line.\n");
-        appendText(textBox, "This is the third line.\n");
-        appendText(textBox, "This is the third line.\n");
-        appendText(textBox, "This is the third line.\n");
-        appendText(textBox, "This is the third line.\n");
-        appendText(textBox, "Hi lol.");
 
         // Limit lines to 5 and make scrollable
         textBox.setWrapText(true); // Enable text wrapping
@@ -256,7 +242,6 @@ public class App extends Application {
                     }
                 }));
         timer.setCycleCount(Timeline.INDEFINITE);
-        timer.play();
 
         // Click-this-mole Box
         // Create a VBox
@@ -315,6 +300,18 @@ public class App extends Application {
             stage.setY((screenBounds.getHeight() - stage.getHeight()) / 2);
 
             stage.show();
+
+            // Starts game singleton
+            Game game = Game.getInstance();
+            game.setStage(stage);
+            game.setScene(scene);
+
+            // Starts logging singleton
+            Logger log = Logger.getInstance();
+            log.log("Game starts!");
+
+            // Starts the timer
+            timer.play();
         });
 
         Image i5 = new Image(App.class.getResource("images/snake.png").toExternalForm());
@@ -360,13 +357,6 @@ public class App extends Application {
         pestLayer.getChildren().add(iv5);
     }
 
-    // Method to append text to the TextArea and scroll to the end
-    private void appendText(TextArea textArea, String text) {
-        textArea.appendText(text);
-        // Set the caret position to the end
-        textArea.positionCaret(textArea.getLength());
-    }
-
     // Method to format time as mm:ss
     private String formatTime(int seconds) {
         return seconds + "s";
@@ -402,22 +392,10 @@ public class App extends Application {
         Popup popup = new Popup();
         popup.getContent().add(popupLayout); // Add content to the popup
 
-        System.out.println("Is this pop showing? " + popup.isShowing());
-
         // Show the popup at a specific location (adjust as needed)
         popup.show((Stage) scene.getWindow());
 
     }
-
-    // static void setRoot(String fxml) throws IOException {
-    // scene.setRoot(loadFXML(fxml));
-    // }
-
-    // private static Parent loadFXML(String fxml) throws IOException {
-    // FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml +
-    // ".fxml"));
-    // return fxmlLoader.load();
-    // }
 
     public static void main(String[] args) {
         launch();
