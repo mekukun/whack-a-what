@@ -1,5 +1,7 @@
 package com.designpattern;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -9,6 +11,8 @@ import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -34,6 +38,7 @@ import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.stage.Popup;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -46,6 +51,7 @@ import java.io.IOException;
 public class App extends Application {
 
     private static Scene scene;
+    private Timeline timer;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -117,8 +123,7 @@ public class App extends Application {
         StackPane pestLayer = new StackPane();
 
         TextArea textBox = new TextArea();
-        StackPane.setMargin(textBox, new Insets(750, 700, 0, 0)); // Adjust values as needed
-        StackPane.setAlignment(textBox, Pos.BOTTOM_LEFT);
+        StackPane.setMargin(textBox, new Insets(750, 800, 10, 10)); // Adjust values as needed
         textBox.getStyleClass().add("text-area");
         appendText(textBox, "This is the first line.\n");
         appendText(textBox, "This is the second line.\n");
@@ -156,7 +161,7 @@ public class App extends Application {
         iv.setTranslateX(0);
         iv.setTranslateY(300);
 
-        // 2nd layer
+        // 2nd layer (Carpet)
         sp.getChildren().add(iv);
 
         Image i = new Image(App.class.getResource("images/sofa.png").toExternalForm());
@@ -170,7 +175,7 @@ public class App extends Application {
         iv1.setTranslateX(200);
         iv1.setTranslateY(150);
 
-        // 3rd layer
+        // 3rd layer (Sofa)
         sp.getChildren().add(iv1);
 
         Image i2 = new Image(App.class.getResource("images/cabinet.png").toExternalForm());
@@ -184,7 +189,7 @@ public class App extends Application {
         iv2.setTranslateX(-300);
         iv2.setTranslateY(160);
 
-        // 4th layer
+        // 4th layer (Cabinet)
         sp.getChildren().add(iv2);
 
         Image i3 = new Image(App.class.getResource("images/lamp.png").toExternalForm());
@@ -198,7 +203,7 @@ public class App extends Application {
         iv3.setTranslateX(-300);
         iv3.setTranslateY(-25);
 
-        // 5th layer
+        // 5th layer (Lamp)
         sp.getChildren().add(iv3);
 
         Image i4 = new Image(App.class.getResource("images/clock.png").toExternalForm());
@@ -212,11 +217,89 @@ public class App extends Application {
         iv4.setTranslateX(0);
         iv4.setTranslateY(-130);
 
-        // 6th layer
+        // 6th layer (Clock)
         sp.getChildren().add(iv4);
 
-        // 7th layer
+        // 7th layer (Log Message Box)
         sp.getChildren().add(textBox);
+
+        // Timer Box
+        // Create a VBox
+        VBox timerBox = new VBox();
+        timerBox.setAlignment(Pos.CENTER);
+        timerBox.setStyle("-fx-background-color: rgba(53, 89, 119, 0.2);");
+        StackPane.setMargin(timerBox, new Insets(10, 900, 750, 10)); // Adjust values as needed
+
+        // Create a label for "Time left:"
+        Label timeLeftLabel = new Label("Time left:");
+        timeLeftLabel.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+
+        // Create a label for the timer
+        Label timerLabel = new Label("30s"); // Set the initial value directly
+        timerLabel.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+
+        // Add labels to the VBox
+        timerBox.getChildren().addAll(timeLeftLabel, timerLabel);
+
+        // 8th layer (Timer Box)
+        sp.getChildren().add(timerBox);
+
+        // Create a Timeline to update the timer every second
+        timer = new Timeline(
+                new KeyFrame(Duration.seconds(1), event -> {
+                    int remainingSeconds = Integer.parseInt(timerLabel.getText().replace("s", ""));
+                    remainingSeconds--;
+                    timerLabel.setText(formatTime(remainingSeconds));
+                    if (remainingSeconds == 0) {
+                        timer.stop();
+                        showCongratsPopup();
+                    }
+                }));
+        timer.setCycleCount(Timeline.INDEFINITE);
+        timer.play();
+
+        // Click-this-mole Box
+        // Create a VBox
+        VBox moleBox = new VBox();
+        moleBox.setAlignment(Pos.CENTER);
+        moleBox.setStyle("-fx-background-color: rgba(53, 89, 119, 0.2);");
+        StackPane.setMargin(moleBox, new Insets(10, 400, 750, 400)); // Adjust values as needed
+
+        // Create a label for "Click"
+        Label clickLabel = new Label("Click");
+        clickLabel.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+
+        // Create a label for the mole
+        String mole = "Snake";
+        Label moleLabel = new Label(mole); // Set the initial value directly
+        moleLabel.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+
+        // Add labels to the VBox
+        moleBox.getChildren().addAll(clickLabel, moleLabel);
+
+        // 9th layer (Mole Box)
+        sp.getChildren().add(moleBox);
+
+        // Score Box
+        // Create a VBox
+        VBox scoreBox = new VBox();
+        scoreBox.setAlignment(Pos.CENTER);
+        scoreBox.setStyle("-fx-background-color: rgba(53, 89, 119, 0.2);");
+        StackPane.setMargin(scoreBox, new Insets(10, 10, 750, 900)); // Adjust values as needed
+
+        // Create a label for "Score:"
+        Label scoreLabel = new Label("Score:");
+        scoreLabel.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+
+        // Create a label for the score
+        Label actualScoreLabel = new Label("90"); // Set the initial value directly
+        actualScoreLabel.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+
+        // Add labels to the VBox
+        scoreBox.getChildren().addAll(scoreLabel, actualScoreLabel);
+
+        // 10th layer (Score Box)
+        sp.getChildren().add(scoreBox);
 
         // Start Actual Game Scene
         // Add a click event handler to the button
@@ -268,6 +351,7 @@ public class App extends Application {
             public void handle(MouseEvent event) {
                 System.out.println("Tile pressed ");
                 pestLayer.getChildren().remove(iv5);
+                showCongratsPopup();
                 event.consume();
             }
         });
@@ -281,6 +365,48 @@ public class App extends Application {
         textArea.appendText(text);
         // Set the caret position to the end
         textArea.positionCaret(textArea.getLength());
+    }
+
+    // Method to format time as mm:ss
+    private String formatTime(int seconds) {
+        return seconds + "s";
+    }
+
+    private void showCongratsPopup() {
+        // Create a VBox
+        VBox popupLayout = new VBox(8);
+        popupLayout.setAlignment(Pos.CENTER);
+        popupLayout.setPadding(new Insets(10, 10, 10, 10));
+        popupLayout.setStyle("-fx-background-color: white;");
+
+        // Create a label for "Congrats"
+        Label congrats = new Label("Congrats!");
+        congrats.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+
+        // Create a label for the score
+        Label score = new Label("Score:"); // Set the initial value directly
+        score.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+
+        // Create a label for the actualScore
+        Label actualScore = new Label("90"); // Set the initial value directly
+        actualScore.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+
+        // Create a label for the leaderboard
+        Label leaderboard = new Label("Leaderboard"); // Set the initial value directly
+        leaderboard.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+
+        // Add labels to the VBox
+        popupLayout.getChildren().addAll(congrats, score, actualScore, leaderboard);
+
+        // Create the popup
+        Popup popup = new Popup();
+        popup.getContent().add(popupLayout); // Add content to the popup
+
+        System.out.println("Is this pop showing? " + popup.isShowing());
+
+        // Show the popup at a specific location (adjust as needed)
+        popup.show((Stage) scene.getWindow());
+
     }
 
     // static void setRoot(String fxml) throws IOException {
