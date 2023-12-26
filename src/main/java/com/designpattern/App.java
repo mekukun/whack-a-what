@@ -349,6 +349,7 @@ public class App extends Application {
         // Create a label for the score
         Label actualScoreLabel = new Label(Integer.toString(Game.getInstance().getScore())); // Set the initial value
                                                                                              // directly
+        actualScoreLabel.setId("actualScoreLabel");
         actualScoreLabel.setFont(Font.font("Arial", FontWeight.BOLD, 24));
 
         // Add labels to the VBox
