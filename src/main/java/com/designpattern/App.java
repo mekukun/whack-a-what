@@ -36,6 +36,7 @@ import java.io.IOException;
 
 import com.designpattern.Singleton.Game;
 import com.designpattern.Singleton.Logger;
+import com.designpattern.Strategy.NormalMole;
 
 /**
  * JavaFX App
@@ -87,10 +88,9 @@ public class App extends Application {
 
         // Create a ComboBox with three options
         ComboBox<String> moleOptions = new ComboBox<>();
-        moleOptions.getItems().addAll("Bookworm Mole", "Foodie Mole", "Adventurous Mole"); // Add your desired options
-
-        // Set Bookworm Mole as the default value
-        moleOptions.setValue("Bookworm Mole");
+        moleOptions.getItems().addAll("Snake", "Rat", "Spider"); // Add your desired options
+        // Set first option as the default value
+        moleOptions.getSelectionModel().selectFirst();
 
         // Add elements to the HBox
         hbox.getChildren().addAll(chooseMoleLabel, moleOptions);
@@ -109,11 +109,65 @@ public class App extends Application {
 
         // ---------------------------------------------------------------------------------------
 
+        // Start Actual Game Scene
+        // Add a click event handler to the button
+        startButton.setOnAction(event -> {
+            // Set game singleton to this initial screen
+            Game.getInstance().setMole(moleOptions.getValue());
+            sceneToGame(stage);
+        });
+    }
+
+    // Method to format time as mm:ss
+    private String formatTime(int seconds) {
+        return seconds + "s";
+    }
+
+    private void showCongratsPopup() {
+        // Create a VBox
+        VBox popupLayout = new VBox(8);
+        popupLayout.setAlignment(Pos.CENTER);
+        popupLayout.setPadding(new Insets(10, 10, 10, 10));
+        popupLayout.setStyle("-fx-background-color: white;");
+
+        // Create a label for "Congrats"
+        Label congrats = new Label("Congrats!");
+        congrats.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+
+        // Create a label for the score
+        Label score = new Label("Score:"); // Set the initial value directly
+        score.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+
+        // Create a label for the actualScore
+        Label actualScore = new Label(Integer.toString(Game.getInstance().getScore())); // Set the initial value
+                                                                                        // directly
+        actualScore.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+
+        // Create a label for the leaderboard
+        Label leaderboard = new Label("Leaderboard"); // Set the initial value directly
+        leaderboard.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+
+        // Add labels to the VBox
+        popupLayout.getChildren().addAll(congrats, score, actualScore, leaderboard);
+
+        // Create the popup
+        Popup popup = new Popup();
+        popup.getContent().add(popupLayout); // Add content to the popup
+
+        // Show the popup at a specific location (adjust as needed)
+        popup.show((Stage) scene.getWindow());
+
+    }
+
+    // Method to format time as mm:ss
+    private void sceneToGame(Stage stage) {
+
         // Actual Play Game Scene
         StackPane sp = new StackPane();
         sp.setId("globalPane");
 
         StackPane pestLayer = new StackPane();
+        pestLayer.setId("pestLayer");
 
         TextArea textBox = new TextArea();
         textBox.setId("loggingBox");
@@ -126,7 +180,21 @@ public class App extends Application {
         // Optional: Disable editing if needed
         textBox.setEditable(false);
 
-        // 1st layer of the stackpane (the most back)
+        Image bleedImage = new Image(App.class.getResource("images/bleed.png").toExternalForm());
+
+        ImageView bleed = new ImageView();
+        bleed.setImage(bleedImage);
+        bleed.setFitHeight(860);
+        bleed.setPreserveRatio(false);
+        bleed.setSmooth(true);
+        bleed.setCache(true);
+        bleed.setOpacity(0.5);
+        bleed.setVisible(false);
+
+        // 0th layer of the stackpane (the most back)
+        sp.getChildren().add(bleed);
+
+        // 1st layer of the stackpane
         sp.getChildren().add(pestLayer);
 
         Image image = new Image(App.class.getResource("images/background.png").toExternalForm());
@@ -236,6 +304,9 @@ public class App extends Application {
                     int remainingSeconds = Integer.parseInt(timerLabel.getText().replace("s", ""));
                     remainingSeconds--;
                     timerLabel.setText(formatTime(remainingSeconds));
+                    if (remainingSeconds == 10) {
+                        bleed.setVisible(true);
+                    }
                     if (remainingSeconds == 0) {
                         timer.stop();
                         showCongratsPopup();
@@ -255,8 +326,7 @@ public class App extends Application {
         clickLabel.setFont(Font.font("Arial", FontWeight.BOLD, 16));
 
         // Create a label for the mole
-        String mole = "Snake";
-        Label moleLabel = new Label(mole); // Set the initial value directly
+        Label moleLabel = new Label(Game.getInstance().getMole()); // Set the initial value directly
         moleLabel.setFont(Font.font("Arial", FontWeight.BOLD, 24));
 
         // Add labels to the VBox
@@ -277,7 +347,8 @@ public class App extends Application {
         scoreLabel.setFont(Font.font("Arial", FontWeight.BOLD, 16));
 
         // Create a label for the score
-        Label actualScoreLabel = new Label("90"); // Set the initial value directly
+        Label actualScoreLabel = new Label(Integer.toString(Game.getInstance().getScore())); // Set the initial value
+                                                                                             // directly
         actualScoreLabel.setFont(Font.font("Arial", FontWeight.BOLD, 24));
 
         // Add labels to the VBox
@@ -286,115 +357,33 @@ public class App extends Application {
         // 10th layer (Score Box)
         sp.getChildren().add(scoreBox);
 
-        // Start Actual Game Scene
-        // Add a click event handler to the button
-        startButton.setOnAction(event -> {
-            scene = new Scene(sp, 1200, 860);
-            scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
-            stage.setScene(scene);
-            stage.setResizable(false);
+        scene = new Scene(sp, 1200, 860);
+        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        stage.setScene(scene);
+        stage.setResizable(false);
 
-            // Center the stage on the screen
-            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-            stage.setX((screenBounds.getWidth() - stage.getWidth()) / 2);
-            stage.setY((screenBounds.getHeight() - stage.getHeight()) / 2);
+        // Center the stage on the screen
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+        stage.setX((screenBounds.getWidth() - stage.getWidth()) / 2);
+        stage.setY((screenBounds.getHeight() - stage.getHeight()) / 2);
 
-            stage.show();
+        stage.show();
 
-            // Starts game singleton
-            Game game = Game.getInstance();
-            game.setStage(stage);
-            game.setScene(scene);
+        // Starts game singleton
+        Game game = Game.getInstance();
+        game.setStage(stage);
+        game.setScene(scene);
 
-            // Starts logging singleton
-            Logger log = Logger.getInstance();
-            log.log("Game starts!");
+        // Starts logging singleton
+        Logger log = Logger.getInstance();
+        log.log("Game starts!");
 
-            // Starts the timer
-            timer.play();
-        });
+        // Starts the timer
+        timer.play();
 
         Image i5 = new Image(App.class.getResource("images/snake.png").toExternalForm());
-
-        ImageView iv5 = new ImageView();
-        iv5.setImage(i5);
-        iv5.setFitWidth(100);
-        iv5.setPreserveRatio(true);
-        iv5.setSmooth(true);
-        iv5.setCache(true);
-        iv5.setTranslateX(0);
-        iv5.setTranslateY(-130);
-
-        // Create a TranslateTransition for sliding in
-        TranslateTransition slideIn = new TranslateTransition(Duration.seconds(1), iv5);
-        slideIn.setToY(0); // Slide to the original Y position
-
-        // Create a TranslateTransition for sliding out
-        TranslateTransition slideOut = new TranslateTransition(Duration.seconds(1), iv5);
-        slideOut.setToY(-130); // Slide to the top
-
-        // Start by sliding in
-        slideIn.play();
-
-        // After sliding in, set up a cycle for sliding in and out
-        slideIn.setOnFinished(e -> {
-            slideOut.play();
-            slideOut.setOnFinished(event -> slideIn.play());
-        });
-
-        iv5.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-
-            @Override
-            public void handle(MouseEvent event) {
-                System.out.println("Tile pressed ");
-                pestLayer.getChildren().remove(iv5);
-                showCongratsPopup();
-                event.consume();
-            }
-        });
-
-        // Put snake ImageView into the first layer
-        pestLayer.getChildren().add(iv5);
-    }
-
-    // Method to format time as mm:ss
-    private String formatTime(int seconds) {
-        return seconds + "s";
-    }
-
-    private void showCongratsPopup() {
-        // Create a VBox
-        VBox popupLayout = new VBox(8);
-        popupLayout.setAlignment(Pos.CENTER);
-        popupLayout.setPadding(new Insets(10, 10, 10, 10));
-        popupLayout.setStyle("-fx-background-color: white;");
-
-        // Create a label for "Congrats"
-        Label congrats = new Label("Congrats!");
-        congrats.setFont(Font.font("Arial", FontWeight.BOLD, 24));
-
-        // Create a label for the score
-        Label score = new Label("Score:"); // Set the initial value directly
-        score.setFont(Font.font("Arial", FontWeight.BOLD, 16));
-
-        // Create a label for the actualScore
-        Label actualScore = new Label("90"); // Set the initial value directly
-        actualScore.setFont(Font.font("Arial", FontWeight.BOLD, 24));
-
-        // Create a label for the leaderboard
-        Label leaderboard = new Label("Leaderboard"); // Set the initial value directly
-        leaderboard.setFont(Font.font("Arial", FontWeight.BOLD, 24));
-
-        // Add labels to the VBox
-        popupLayout.getChildren().addAll(congrats, score, actualScore, leaderboard);
-
-        // Create the popup
-        Popup popup = new Popup();
-        popup.getContent().add(popupLayout); // Add content to the popup
-
-        // Show the popup at a specific location (adjust as needed)
-        popup.show((Stage) scene.getWindow());
-
+        NormalMole nm = new NormalMole(i5);
+        nm.peek(0, -130);
     }
 
     public static void main(String[] args) {

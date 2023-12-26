@@ -9,8 +9,10 @@ public class Game {
     private Stage stage;
     private Scene scene;
     private String mole;
+    private int score;
 
     private Game() {
+        score = 0;
     }
 
     public static synchronized Game getInstance() {
@@ -28,6 +30,10 @@ public class Game {
         this.scene = scene;
     }
 
+    public void setScore(int score) {
+        this.score = score;
+    }
+
     public void setMole(String mole) {
         this.mole = mole;
     }
@@ -42,5 +48,9 @@ public class Game {
 
     public String getMole() {
         return mole;
+    }
+
+    public int getScore() {
+        return score;
     }
 }
