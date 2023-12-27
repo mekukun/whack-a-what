@@ -34,6 +34,10 @@ import javafx.util.Duration;
 
 import java.io.IOException;
 
+import com.designpattern.Behaviors.AddScore;
+import com.designpattern.Behaviors.PopOutPeek;
+import com.designpattern.Factory.ImageEnum;
+import com.designpattern.Factory.ImageFactory;
 import com.designpattern.Singleton.Game;
 import com.designpattern.Singleton.Logger;
 import com.designpattern.Strategy.NormalMole;
@@ -51,7 +55,17 @@ public class App extends Application {
 
         stage.setTitle("Whack-a-what");
 
+        this.StartInterface(stage);
         // Initial Game Scene
+        
+    }
+
+    // Method to format time as mm:ss
+    private String formatTime(int seconds) {
+        return seconds + "s";
+    }
+
+    private void StartInterface(Stage stage){
         VBox screen = new VBox(20); // spacing = 8
         screen.setAlignment(Pos.CENTER); // Center nodes vertically
         screen.setPadding(new Insets(0, 30, 0, 30));
@@ -117,13 +131,8 @@ public class App extends Application {
             sceneToGame(stage);
         });
     }
-
-    // Method to format time as mm:ss
-    private String formatTime(int seconds) {
-        return seconds + "s";
-    }
-
-    private void showCongratsPopup() {
+    
+    private void showCongratsPopup(Stage stage) {
         // Create a VBox
         VBox popupLayout = new VBox(8);
         popupLayout.setAlignment(Pos.CENTER);
@@ -147,8 +156,11 @@ public class App extends Application {
         Label leaderboard = new Label("Leaderboard"); // Set the initial value directly
         leaderboard.setFont(Font.font("Arial", FontWeight.BOLD, 24));
 
+        Button replayButton = new Button("Play Again");
+        Button exitButton = new Button("Exit");
+
         // Add labels to the VBox
-        popupLayout.getChildren().addAll(congrats, score, actualScore, leaderboard);
+        popupLayout.getChildren().addAll(congrats, score, actualScore, leaderboard, replayButton);
 
         // Create the popup
         Popup popup = new Popup();
@@ -156,6 +168,20 @@ public class App extends Application {
 
         // Show the popup at a specific location (adjust as needed)
         popup.show((Stage) scene.getWindow());
+
+        replayButton.setOnAction(event -> {
+            // Set game singleton to this initial screen
+            Game.getInstance().setScore(0);
+            popup.hide();
+            sceneToGame(stage);
+        });
+
+        exitButton.setOnAction(event -> {
+            // Set game singleton to this initial screen
+            Game.getInstance().setScore(0);
+            popup.hide();
+            sceneToGame(stage);
+        });
 
     }
 
@@ -309,7 +335,7 @@ public class App extends Application {
                     }
                     if (remainingSeconds == 0) {
                         timer.stop();
-                        showCongratsPopup();
+                        showCongratsPopup(stage);
                     }
                 }));
         timer.setCycleCount(Timeline.INDEFINITE);
@@ -382,13 +408,14 @@ public class App extends Application {
         // Starts the timer
         timer.play();
 
-        Image i5 = new Image(App.class.getResource("images/snake.png").toExternalForm());
-        NormalMole nm = new NormalMole(i5, 0, -130);
-        nm.peek();
+        
+        NormalMole nm = new NormalMole(new AddScore(), new PopOutPeek());
+        nm.setImageView(ImageFactory.CreateImage(ImageEnum.RAT.getAbbreviation()),0,-130);
+        nm.performPeek();
 
-        Image i6 = new Image(App.class.getResource("images/rat.png").toExternalForm());
-        NormalMole nm2 = new NormalMole(i6, -80, 100);
-        nm2.peek();
+        // Image i6 = new Image(App.class.getResource("images/rat.png").toExternalForm());
+        // NormalMole nm2 = new NormalMole(i6, -80, 100);
+        // nm2.performPeek();
     }
 
     public static void main(String[] args) {
