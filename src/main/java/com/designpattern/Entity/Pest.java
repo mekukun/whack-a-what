@@ -1,4 +1,4 @@
-package com.designpattern.Strategy;
+package com.designpattern.Entity;
 
 import com.designpattern.Behaviors.PeekBehavior;
 import com.designpattern.Behaviors.ScoreBehavior;
@@ -11,7 +11,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 
-public abstract class Pests {
+public abstract class Pest {
     
     private ImageView pest;
 
@@ -20,7 +20,7 @@ public abstract class Pests {
     
     
 
-    public Pests(ScoreBehavior score, PeekBehavior peek) {
+    public Pest(ScoreBehavior score, PeekBehavior peek) {
         this.score = score;
         this.peek = peek;
     }
@@ -64,6 +64,10 @@ public abstract class Pests {
         
     }
 
+    public void setPeekBehavior(PeekBehavior newBehavior){
+        this.peek = newBehavior;
+    }
+    
     public void setCoordinateTranslation(double x, double y){
         pest.setTranslateX(x);
         pest.setTranslateY(y);

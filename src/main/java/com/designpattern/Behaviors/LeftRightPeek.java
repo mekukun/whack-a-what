@@ -4,16 +4,16 @@ import javafx.animation.TranslateTransition;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 
-public class PopOutPeek implements PeekBehavior{
+public class LeftRightPeek implements PeekBehavior{
 
     @Override
     public void peek(ImageView pest) {
         TranslateTransition slideIn = new TranslateTransition(Duration.seconds(1), pest);
-        slideIn.setByY(100); // Slide to the original Y position
+        slideIn.setByX(100); // Slide to the original Y position
 
         // Create a TranslateTransition for sliding out
         TranslateTransition slideOut = new TranslateTransition(Duration.seconds(1), pest);
-        slideOut.setByY(-100); // Slide to the top
+        slideOut.setByX(-100); // Slide to the top
 
         // Start by sliding in
         slideIn.play();

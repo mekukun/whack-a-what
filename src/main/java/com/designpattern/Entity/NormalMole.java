@@ -1,14 +1,17 @@
-package com.designpattern.Strategy;
+package com.designpattern.Entity;
+
 
 import com.designpattern.Behaviors.PeekBehavior;
 import com.designpattern.Behaviors.ScoreBehavior;
 import com.designpattern.Factory.ImageEnum;
-import com.designpattern.Factory.ImageFactory;
+import com.designpattern.Factory.ImageGenerator;
 
-public class NonMole extends Pests {
-     public NonMole(ScoreBehavior score, PeekBehavior peek) {
+
+public class NormalMole extends Pest {
+
+    public NormalMole(ScoreBehavior score, PeekBehavior peek) {
         super(score, peek);
-        super.setImageView(ImageFactory.CreateImage("NONE"));
+        super.setImageView(ImageGenerator.GenerateImage(ImageEnum.RAT.getAbbreviation()));
     }
 
     @Override

@@ -1,7 +1,15 @@
 package com.designpattern.Factory;
 
 public enum ImageEnum {
-    RAT("rat"), SNAKE("snake"), SPIDER("spider");
+    RAT("rat"),
+    GOLDENRAT("goldenrat"), 
+    SNAKE("snake"), 
+    SPIDER("spider"),
+    CARPET("carpet"),
+    CLOCK("clock"),
+    LAMP("lamp"),
+    SOFA("sofa"),
+    CABINET("cabinet");
 
     private String abbreviation;
 
