@@ -35,11 +35,13 @@ import javafx.util.Duration;
 import java.io.IOException;
 
 import com.designpattern.Behaviors.AddScore;
+import com.designpattern.Behaviors.DeductScore;
 import com.designpattern.Behaviors.PopOutPeek;
 import com.designpattern.Factory.ImageEnum;
 import com.designpattern.Factory.ImageFactory;
 import com.designpattern.Singleton.Game;
 import com.designpattern.Singleton.Logger;
+import com.designpattern.Strategy.NonMole;
 import com.designpattern.Strategy.NormalMole;
 
 /**
@@ -410,9 +412,12 @@ public class App extends Application {
 
         
         NormalMole nm = new NormalMole(new AddScore(), new PopOutPeek());
-        nm.setImageView(ImageFactory.CreateImage(ImageEnum.RAT.getAbbreviation()),0,-130);
+        nm.setCoordinateTranslation(0, -130);
         nm.performPeek();
 
+        NonMole nonMole = new NonMole(new DeductScore(), new PopOutPeek());
+        nonMole.setCoordinateTranslation(-80, 100);
+        nonMole.performPeek();
         // Image i6 = new Image(App.class.getResource("images/rat.png").toExternalForm());
         // NormalMole nm2 = new NormalMole(i6, -80, 100);
         // nm2.performPeek();

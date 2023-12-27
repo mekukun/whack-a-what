@@ -33,7 +33,7 @@ public abstract class Pests {
         score.handleScore();
     };
 
-    public void setImageView(Image image, double x, double y){
+    public void setImageView(Image image){
         ImageView imageView = new ImageView();
         imageView.setImage(image);
         imageView.setFitWidth(100);
@@ -61,6 +61,10 @@ public abstract class Pests {
 
         pest.setVisible(true);
 
+        
+    }
+
+    public void setCoordinateTranslation(double x, double y){
         pest.setTranslateX(x);
         pest.setTranslateY(y);
     }
