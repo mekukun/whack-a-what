@@ -8,7 +8,7 @@ import javafx.scene.control.Label;
 public class Mole extends Pests {
 
     @Override
-    public void peek(double x, double y) {
+    public void peek() {
         //
     }
 

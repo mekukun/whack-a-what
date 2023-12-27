@@ -383,8 +383,12 @@ public class App extends Application {
         timer.play();
 
         Image i5 = new Image(App.class.getResource("images/snake.png").toExternalForm());
-        NormalMole nm = new NormalMole(i5);
-        nm.peek(0, -130);
+        NormalMole nm = new NormalMole(i5, 0, -130);
+        nm.peek();
+
+        Image i6 = new Image(App.class.getResource("images/rat.png").toExternalForm());
+        NormalMole nm2 = new NormalMole(i6, -80, 100);
+        nm2.peek();
     }
 
     public static void main(String[] args) {

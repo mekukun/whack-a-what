@@ -5,6 +5,7 @@ import com.designpattern.Singleton.Game;
 
 import javafx.animation.TranslateTransition;
 import javafx.event.EventHandler;
+import javafx.scene.Cursor;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -15,7 +16,7 @@ public class NormalMole extends Mole {
 
     private ImageView moleIv;
 
-    public NormalMole(Image image) {
+    public NormalMole(Image image, double x, double y) {
         ImageView iv5 = new ImageView();
         iv5.setImage(image);
         iv5.setFitWidth(100);
@@ -23,6 +24,8 @@ public class NormalMole extends Mole {
         iv5.setSmooth(true);
         iv5.setCache(true);
 
+        iv5.setCursor(Cursor.HAND);
+        
         iv5.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
 
             @Override
@@ -38,23 +41,23 @@ public class NormalMole extends Mole {
         iv5.setVisible(false);
 
         moleIv = iv5;
-    }
-
-    @Override
-    public void peek(double x, double y) {
 
         moleIv.setVisible(true);
 
         moleIv.setTranslateX(x);
         moleIv.setTranslateY(y);
+    }
+
+    @Override
+    public void peek() {
 
         // Create a TranslateTransition for sliding in
         TranslateTransition slideIn = new TranslateTransition(Duration.seconds(1), moleIv);
-        slideIn.setToY(0); // Slide to the original Y position
+        slideIn.setByY(130); // Slide to the original Y position
 
         // Create a TranslateTransition for sliding out
         TranslateTransition slideOut = new TranslateTransition(Duration.seconds(1), moleIv);
-        slideOut.setToY(-130); // Slide to the top
+        slideOut.setByY(-130); // Slide to the top
 
         // Start by sliding in
         slideIn.play();
