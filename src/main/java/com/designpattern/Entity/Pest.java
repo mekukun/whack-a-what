@@ -72,4 +72,8 @@ public abstract class Pest {
         pest.setTranslateX(x);
         pest.setTranslateY(y);
     }
+
+    public ImageView getImageView(){
+        return pest;
+    }
 }

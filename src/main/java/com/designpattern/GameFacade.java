@@ -265,6 +265,8 @@ public class GameFacade {
         int RANDOM_HEIGHT = r.nextInt(HEIGHT_MAX - HEIGHT_MIN + 1) + HEIGHT_MIN;
         RANDOM_HEIGHT = r.nextBoolean() ? -RANDOM_HEIGHT : RANDOM_HEIGHT;
         Pest bonusPest = new PestFactory().createPest("BONUS");
+        bonusPest.getImageView().setId("bonusPest");
+        bonusPest.getImageView().setVisible(false);
         bonusPest.setCoordinateTranslation(0, RANDOM_HEIGHT);
         bonusPest.performPeek();
     }
@@ -313,7 +315,9 @@ public class GameFacade {
                     timerLabel.setText(formatTime(remainingSeconds));
                     if (remainingSeconds == 10) {
                         ImageView bleed = (ImageView) Game.getInstance().getScene().lookup("#bleed");
+                        ImageView bonusPest = (ImageView) Game.getInstance().getScene().lookup("#bonusPest");
                         bleed.setVisible(true);
+                        bonusPest.setVisible(true);
                     }
                     if (remainingSeconds == 0) {
                         timer.stop();
