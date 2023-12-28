@@ -8,8 +8,8 @@ public class Game {
 
     private Stage stage;
     private Scene scene;
-    private String mole;
     private int score;
+    private String userName;
 
     private Game() {
         score = 0;
@@ -34,8 +34,8 @@ public class Game {
         this.score = score;
     }
 
-    public void setMole(String mole) {
-        this.mole = mole;
+    public void setUsername(String userName) {
+        this.userName = userName;
     }
 
     public Stage getStage() {
@@ -46,12 +46,12 @@ public class Game {
         return scene;
     }
 
-    public String getMole() {
-        return mole;
-    }
-
     public int getScore() {
         return score;
+    }
+
+    public String getUsername() {
+        return userName;
     }
 
     // public void renewGame(){

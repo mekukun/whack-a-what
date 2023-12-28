@@ -8,6 +8,8 @@ import com.designpattern.Entity.Pest;
 import com.designpattern.Factory.FurnitureFactory;
 import com.designpattern.Factory.PestFactory;
 import com.designpattern.Singleton.Game;
+import com.designpattern.Singleton.Leaderboard;
+import com.designpattern.Singleton.LeaderboardEntry;
 import com.designpattern.Singleton.Logger;
 import com.designpattern.App;
 import javafx.animation.KeyFrame;
@@ -19,8 +21,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
@@ -75,34 +80,19 @@ public class GameFacade {
         // Populate inside the Name Input Container
         nameInputBox.getChildren().addAll(name, textField);
 
-        // Choose Your Mole Container
-        HBox hbox = new HBox(); // Create an HBox
-        hbox.setSpacing(10); // Set spacing between elements
-        // Center elements both vertically and horizontally
-        hbox.setAlignment(Pos.CENTER);
-
         // Label for "Choose your mole"
-        Label chooseMoleLabel = new Label("Choose your mole :");
-        chooseMoleLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14)); // Set font properties for label
-
-        // Create a ComboBox with three options
-        ComboBox<String> moleOptions = new ComboBox<>();
-        moleOptions.getItems().addAll("Snake", "Rat", "Spider"); // Add your desired options
-        // Set first option as the default value
-        moleOptions.getSelectionModel().selectFirst();
-
-        // Add elements to the HBox
-        hbox.getChildren().addAll(chooseMoleLabel, moleOptions);
+        Label chooseMoleLabel = new Label("Your mission is to destroy RATS only!");
+        chooseMoleLabel.setFont(Font.font("Arial", FontWeight.BOLD, 18)); // Set font properties for label
 
         // Create the "Start" button Container
         Button startButton = new Button("Start");
         startButton.setOnAction(event -> {
             // Set game singleton to this initial screen
-            Game.getInstance().setMole(moleOptions.getValue());
+            Game.getInstance().setUsername(textField.getText());
             sceneToGame(stage);
         });
         // Populate screen w/ containers
-        screen.getChildren().addAll(b, nameInputBox, hbox, startButton);
+        screen.getChildren().addAll(b, nameInputBox, chooseMoleLabel, startButton);
 
         return screen;
     }
@@ -132,14 +122,32 @@ public class GameFacade {
         actualScore.setFont(Font.font("Arial", FontWeight.BOLD, 24));
 
         // Create a label for the leaderboard
-        Label leaderboard = new Label("Leaderboard"); // Set the initial value directly
-        leaderboard.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+        Label leaderboard = new Label("Top 5 Leaderboard"); // Set the initial value directly
+        leaderboard.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+
+        TableView<LeaderboardEntry> table = new TableView<>();
+        TableColumn<LeaderboardEntry, Integer> rankColumn = new TableColumn<>("Rank");
+        rankColumn.setCellValueFactory(new PropertyValueFactory<>("rank"));
+
+        TableColumn<LeaderboardEntry, String> nameColumn = new TableColumn<>("Name");
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        TableColumn<LeaderboardEntry, Integer> scoreColumn = new TableColumn<>("Score");
+        scoreColumn.setCellValueFactory(new PropertyValueFactory<>("score"));
+        table.getColumns().addAll(rankColumn, nameColumn, scoreColumn);
+        table.setMaxHeight(150);
+        // ensure that the extra space in table column header will be distributed among
+        // the columns
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        // Update leaderboard
+        Leaderboard.getInstance().paintLeaderboard(table);
 
         Button replayButton = new Button("Play Again");
         Button exitButton = new Button("Home");
 
         // Add labels to the VBox
-        popupLayout.getChildren().addAll(congrats, score, actualScore, leaderboard, replayButton, exitButton);
+        popupLayout.getChildren().addAll(congrats, score, actualScore, leaderboard, table, replayButton, exitButton);
 
         // Create the popup
         Popup popup = new Popup();
@@ -339,7 +347,7 @@ public class GameFacade {
         clickLabel.setFont(Font.font("Arial", FontWeight.BOLD, 16));
 
         // Create a label for the mole
-        Label moleLabel = new Label(Game.getInstance().getMole()); // Set the initial value directly
+        Label moleLabel = new Label("The Rat!"); // Set the initial value directly
         moleLabel.setFont(Font.font("Arial", FontWeight.BOLD, 24));
 
         // Add labels to the VBox

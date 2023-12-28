@@ -19,3 +19,7 @@
   -fx-pref-width: 1;
   -fx-opacity: 0;
 }
+
+.table-column {
+  -fx-alignment: center;
+}
