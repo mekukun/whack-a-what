@@ -146,7 +146,7 @@ public class GameFacade {
 
         replayButton.setOnAction(event -> {
             // Set game singleton to this initial screen
-            Game.getInstance().setScore(0);
+            Game.getInstance().renewGame();
             popup.hide();
             sceneToGame(stage);
         });
@@ -154,6 +154,7 @@ public class GameFacade {
         exitButton.setOnAction(event -> {
             // Set game singleton to this initial screen
             popup.hide();
+            Game.getInstance().renewGame();
             this.StartInterface(stage);
         });
 
