@@ -259,6 +259,14 @@ public class GameFacade {
         for (Pest pest : pests) {
             pest.performPeek();
         }
+
+        int HEIGHT_MAX = 300;
+        int HEIGHT_MIN = 0;
+        int RANDOM_HEIGHT = r.nextInt(HEIGHT_MAX - HEIGHT_MIN + 1) + HEIGHT_MIN;
+        RANDOM_HEIGHT = r.nextBoolean() ? -RANDOM_HEIGHT : RANDOM_HEIGHT;
+        Pest bonusPest = new PestFactory().createPest("BONUS");
+        bonusPest.setCoordinateTranslation(0, RANDOM_HEIGHT);
+        bonusPest.performPeek();
     }
 
     private void setLoggingBox(StackPane sp) {
