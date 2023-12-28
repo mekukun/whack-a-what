@@ -1,5 +1,6 @@
 package com.designpattern.Behaviors;
 
+import com.designpattern.GameFacade;
 import com.designpattern.Singleton.Game;
 import com.designpattern.Singleton.Logger;
 
@@ -15,6 +16,7 @@ public class AddScore implements ScoreBehavior{
         Logger.getInstance().log("Plus Score! New Score : " + Game.getInstance().getScore());
         Label actualScoreLabel = (Label) Game.getInstance().getScene().lookup("#actualScoreLabel");
         actualScoreLabel.setText(Integer.toString(Game.getInstance().getScore()));
+        GameFacade.createPest();
     }
     
 }

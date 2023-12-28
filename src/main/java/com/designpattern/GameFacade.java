@@ -41,15 +41,17 @@ import javafx.util.Duration;
 public class GameFacade {
     private Timeline timer;
     private Scene scene = App.scene;
-    
+    private static Furniture[] furnitures = new Furniture[5];
+    private Stage stage;
+
     // Method to format time as mm:ss
     private String formatTime(int seconds) {
         return seconds + "s";
     }
 
-    public void StartInterface(Stage stage){
-        
-        VBox screen = new VBox(20); // spacing = 8
+    private VBox StartScreenSetup() {
+        VBox screen = new VBox(20);
+        // spacing = 8
         screen.setAlignment(Pos.CENTER); // Center nodes vertically
         screen.setPadding(new Insets(0, 30, 0, 30));
 
@@ -94,28 +96,18 @@ public class GameFacade {
 
         // Create the "Start" button Container
         Button startButton = new Button("Start");
-
-        // Populate screen w/ containers
-        screen.getChildren().addAll(b, nameInputBox, hbox, startButton);
-
-        // // Start Actual Game Scene
-        scene = new Scene(screen, 400, 300);
-        stage.setScene(scene);
-        stage.setResizable(false);
-        stage.show();
-
-        // ---------------------------------------------------------------------------------------
-
-        // Start Actual Game Scene
-        // Add a click event handler to the button
         startButton.setOnAction(event -> {
             // Set game singleton to this initial screen
             Game.getInstance().setMole(moleOptions.getValue());
             sceneToGame(stage);
         });
+        // Populate screen w/ containers
+        screen.getChildren().addAll(b, nameInputBox, hbox, startButton);
+
+        return screen;
     }
-    
-    private void showCongratsPopup(Stage stage) {
+
+    private void showCongratsPopup() {
         // Create a VBox
         VBox popupLayout = new VBox(8);
         popupLayout.setAlignment(Pos.CENTER);
@@ -167,26 +159,19 @@ public class GameFacade {
 
     }
 
-    private void sceneToGame(Stage stage) {
+    public void StartInterface(Stage stage) {
 
-        // Actual Play Game Scene
-        StackPane sp = new StackPane();
-        sp.setId("globalPane");
+        this.stage = stage;
 
-        StackPane pestLayer = new StackPane();
-        pestLayer.setId("pestLayer");
+        // // Start Actual Game Scene
+        scene = new Scene(StartScreenSetup(), 400, 300);
+        stage.setScene(scene);
+        stage.setResizable(false);
+        stage.show();
 
-        TextArea textBox = new TextArea();
-        textBox.setId("loggingBox");
-        StackPane.setMargin(textBox, new Insets(750, 800, 10, 10)); // Adjust values as needed
-        textBox.getStyleClass().add("text-area");
+    }
 
-        // Limit lines to 5 and make scrollable
-        textBox.setWrapText(true); // Enable text wrapping
-
-        // Optional: Disable editing if needed
-        textBox.setEditable(false);
-
+    private void setBleedImage(StackPane sp) {
         Image bleedImage = new Image(App.class.getResource("images/bleed.png").toExternalForm());
 
         ImageView bleed = new ImageView();
@@ -197,49 +182,96 @@ public class GameFacade {
         bleed.setCache(true);
         bleed.setOpacity(0.5);
         bleed.setVisible(false);
-
-        // 0th layer of the stackpane (the most back)
+        bleed.setId("bleed");
         sp.getChildren().add(bleed);
+    }
 
-        // 1st layer of the stackpane
-        sp.getChildren().add(pestLayer);
-
+    private void setBackground(StackPane sp) {
         Image image = new Image(App.class.getResource("images/background.png").toExternalForm());
 
         sp.setBackground(new Background(new BackgroundImage(image, BackgroundRepeat.NO_REPEAT,
                 BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
                 new BackgroundSize(1.0, 1.0, true, true, false, false))));
+    }
+
+    private void setFurnitures(StackPane sp) {
 
         FurnitureFactory furnitureFactory = new FurnitureFactory();
 
+        // Create furniture
+        furnitures[0] = furnitureFactory.createFurniture("CARPET");
+        furnitures[1] = furnitureFactory.createFurniture("SOFA");
+        furnitures[2] = furnitureFactory.createFurniture("CABINET");
+        furnitures[3] = furnitureFactory.createFurniture("LAMP");
+        furnitures[4] = furnitureFactory.createFurniture("CLOCK");
         // 2nd layer (Carpet)
-        Furniture carpet = furnitureFactory.createFurniture("CARPET");
+        Furniture carpet = furnitures[0];
         sp.getChildren().add(carpet.getImage());
 
         // 3rd layer (Sofa)
-        Furniture sofa = furnitureFactory.createFurniture("SOFA");
+        Furniture sofa = furnitures[1];
         sp.getChildren().add(sofa.getImage());
 
-
         // 4th layer (Cabinet)
-        Furniture cabinet = furnitureFactory.createFurniture("CABINET");
+        Furniture cabinet = furnitures[2];
         sp.getChildren().add(cabinet.getImage());
 
-
         // 5th layer (Lamp)
-        Furniture lamp = furnitureFactory.createFurniture("LAMP");
+        Furniture lamp = furnitures[3];
         sp.getChildren().add(lamp.getImage());
 
-
         // 6th layer (Clock)
-        Furniture clock = furnitureFactory.createFurniture("CLOCK");
+        Furniture clock = furnitures[4];
         sp.getChildren().add(clock.getImage());
 
-        // 7th layer (Log Message Box)
-        sp.getChildren().add(textBox);
+    }
 
-        // Timer Box
-        // Create a VBox
+    public static void createPest(){
+        StackPane pestStackPane = (StackPane) Game.getInstance().getScene().lookup("#pestLayer");
+        pestStackPane.getChildren().clear();
+        Random r = new Random();
+        int max = 4;
+        int min = 0;
+        int randomNumber = r.nextInt(max - min + 1) + min;
+        Pest[] pests = new Pest[5];
+        for (int i = 0; i < pests.length; i++) {
+            if (i == randomNumber) {
+                pests[i] = new PestFactory().createPest("NORMAL");
+            } else {
+                pests[i] = new PestFactory().createPest("NON");
+            }
+        }
+        // Set the mole to the hole
+        furnitures[0].getHole().setPest(pests[0]);
+        furnitures[1].getHole().setPest(pests[1]);
+        furnitures[2].getHole().setPest(pests[2]);
+        furnitures[3].getHole().setPest(pests[3]);
+        furnitures[4].getHole().setPest(pests[4]);
+        
+        // special for cabinet only
+        pests[2].setPeekBehavior(new LeftRightPeek());
+        
+
+        for (Pest pest : pests) {
+            pest.performPeek();
+        }
+    }
+    
+    private void setLoggingBox(StackPane sp) {
+        TextArea textBox = new TextArea();
+        textBox.setId("loggingBox");
+        StackPane.setMargin(textBox, new Insets(750, 800, 10, 10)); // Adjust values as needed
+        textBox.getStyleClass().add("text-area");
+
+        // Limit lines to 5 and make scrollable
+        textBox.setWrapText(true); // Enable text wrapping
+
+        // Optional: Disable editing if needed
+        textBox.setEditable(false);
+        sp.getChildren().add(textBox);
+    }
+
+    private void setTimerBox(StackPane sp){
         VBox timerBox = new VBox();
         timerBox.setAlignment(Pos.CENTER);
         timerBox.setStyle("-fx-background-color: rgba(53, 89, 119, 0.2);");
@@ -252,31 +284,34 @@ public class GameFacade {
         // Create a label for the timer
         Label timerLabel = new Label("30s"); // Set the initial value directly
         timerLabel.setFont(Font.font("Arial", FontWeight.BOLD, 24));
-
+        timerLabel.setId("timerLabel");
         // Add labels to the VBox
         timerBox.getChildren().addAll(timeLeftLabel, timerLabel);
 
         // 8th layer (Timer Box)
         sp.getChildren().add(timerBox);
+    }
 
-        // Create a Timeline to update the timer every second
+    private void setTimer(){
         timer = new Timeline(
                 new KeyFrame(Duration.seconds(1), event -> {
+                    Label timerLabel = (Label) Game.getInstance().getScene().lookup("#timerLabel");
                     int remainingSeconds = Integer.parseInt(timerLabel.getText().replace("s", ""));
                     remainingSeconds--;
                     timerLabel.setText(formatTime(remainingSeconds));
                     if (remainingSeconds == 10) {
+                        ImageView bleed = (ImageView) Game.getInstance().getScene().lookup("#bleed");
                         bleed.setVisible(true);
                     }
                     if (remainingSeconds == 0) {
                         timer.stop();
-                        showCongratsPopup(stage);
+                        showCongratsPopup();
                     }
                 }));
         timer.setCycleCount(Timeline.INDEFINITE);
+    }
 
-        // Click-this-mole Box
-        // Create a VBox
+    private void setClickThisBox(StackPane sp){
         VBox moleBox = new VBox();
         moleBox.setAlignment(Pos.CENTER);
         moleBox.setStyle("-fx-background-color: rgba(53, 89, 119, 0.2);");
@@ -295,9 +330,9 @@ public class GameFacade {
 
         // 9th layer (Mole Box)
         sp.getChildren().add(moleBox);
+    }
 
-        // Score Box
-        // Create a VBox
+    private void setScoreBox(StackPane sp){
         VBox scoreBox = new VBox();
         scoreBox.setAlignment(Pos.CENTER);
         scoreBox.setStyle("-fx-background-color: rgba(53, 89, 119, 0.2);");
@@ -318,6 +353,43 @@ public class GameFacade {
 
         // 10th layer (Score Box)
         sp.getChildren().add(scoreBox);
+    }
+
+
+    private void sceneToGame(Stage stage) {
+
+        // Setup global stackPane
+        StackPane sp = new StackPane();
+        sp.setId("globalPane");
+
+        StackPane pestLayer = new StackPane();
+        pestLayer.setId("pestLayer");
+
+        // Set bleeding overlay to be the first layer
+        setBleedImage(sp);
+
+        // 1st layer of the stackpane
+        sp.getChildren().add(pestLayer);
+
+
+        setBackground(sp);
+
+        setFurnitures(sp);
+
+        
+        setLoggingBox(sp);
+        
+        // Timer Box
+        setTimerBox(sp);
+
+        // Create a Timeline to update the timer every second
+        setTimer();
+
+        // Click-this-mole Box
+        setClickThisBox(sp);
+
+        // Score Box
+        setScoreBox(sp);
 
         scene = new Scene(sp, 1200, 860);
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
@@ -343,32 +415,8 @@ public class GameFacade {
 
         // Starts the timer
         timer.play();
-        
+
         // Create the pests
-        Random r = new Random();
-        int max = 4;
-        int min = 0;
-        int randomNumber = r.nextInt(max - min + 1) + min;
-        Pest[] pests = new Pest[5];
-        for (int i = 0; i < pests.length; i++) {
-            if(i == randomNumber){
-                pests[i] = new PestFactory().createPest("NORMAL");
-            }else{
-                pests[i] = new PestFactory().createPest("NON");
-            }
-        }
-        // Set the mole to the hole
-        carpet.getHole().setPest(pests[0]);
-        clock.getHole().setPest(pests[1]);
-        lamp.getHole().setPest(pests[2]);
-        sofa.getHole().setPest(pests[3]);
-
-        // special for cabinet only
-        pests[4].setPeekBehavior(new LeftRightPeek());
-        cabinet.getHole().setPest(pests[4]);
-
-        for (Pest pest : pests) {
-            pest.performPeek();
-        }
+        createPest();
     }
 }
