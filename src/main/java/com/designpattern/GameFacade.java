@@ -108,6 +108,10 @@ public class GameFacade {
     }
 
     private void showCongratsPopup() {
+
+        // Save log
+        Logger.getInstance().saveAsFile();
+
         // Create a VBox
         VBox popupLayout = new VBox(8);
         popupLayout.setAlignment(Pos.CENTER);
@@ -146,7 +150,7 @@ public class GameFacade {
 
         replayButton.setOnAction(event -> {
             // Set game singleton to this initial screen
-            Game.getInstance().renewGame();
+            // Game.getInstance().renewGame();
             popup.hide();
             sceneToGame(stage);
         });
@@ -154,7 +158,7 @@ public class GameFacade {
         exitButton.setOnAction(event -> {
             // Set game singleton to this initial screen
             popup.hide();
-            Game.getInstance().renewGame();
+            // Game.getInstance().renewGame();
             this.StartInterface(stage);
         });
 
@@ -227,7 +231,7 @@ public class GameFacade {
 
     }
 
-    public static void createPest(){
+    public static void createPest() {
         StackPane pestStackPane = (StackPane) Game.getInstance().getScene().lookup("#pestLayer");
         pestStackPane.getChildren().clear();
         Random r = new Random();
@@ -248,16 +252,15 @@ public class GameFacade {
         furnitures[2].getHole().setPest(pests[2]);
         furnitures[3].getHole().setPest(pests[3]);
         furnitures[4].getHole().setPest(pests[4]);
-        
+
         // special for cabinet only
         pests[2].setPeekBehavior(new LeftRightPeek());
-        
 
         for (Pest pest : pests) {
             pest.performPeek();
         }
     }
-    
+
     private void setLoggingBox(StackPane sp) {
         TextArea textBox = new TextArea();
         textBox.setId("loggingBox");
@@ -272,7 +275,7 @@ public class GameFacade {
         sp.getChildren().add(textBox);
     }
 
-    private void setTimerBox(StackPane sp){
+    private void setTimerBox(StackPane sp) {
         VBox timerBox = new VBox();
         timerBox.setAlignment(Pos.CENTER);
         timerBox.setStyle("-fx-background-color: rgba(53, 89, 119, 0.2);");
@@ -293,7 +296,7 @@ public class GameFacade {
         sp.getChildren().add(timerBox);
     }
 
-    private void setTimer(){
+    private void setTimer() {
         timer = new Timeline(
                 new KeyFrame(Duration.seconds(1), event -> {
                     Label timerLabel = (Label) Game.getInstance().getScene().lookup("#timerLabel");
@@ -306,13 +309,14 @@ public class GameFacade {
                     }
                     if (remainingSeconds == 0) {
                         timer.stop();
+                        Logger.getInstance().log("Game has ended!");
                         showCongratsPopup();
                     }
                 }));
         timer.setCycleCount(Timeline.INDEFINITE);
     }
 
-    private void setClickThisBox(StackPane sp){
+    private void setClickThisBox(StackPane sp) {
         VBox moleBox = new VBox();
         moleBox.setAlignment(Pos.CENTER);
         moleBox.setStyle("-fx-background-color: rgba(53, 89, 119, 0.2);");
@@ -333,7 +337,7 @@ public class GameFacade {
         sp.getChildren().add(moleBox);
     }
 
-    private void setScoreBox(StackPane sp){
+    private void setScoreBox(StackPane sp) {
         VBox scoreBox = new VBox();
         scoreBox.setAlignment(Pos.CENTER);
         scoreBox.setStyle("-fx-background-color: rgba(53, 89, 119, 0.2);");
@@ -344,6 +348,7 @@ public class GameFacade {
         scoreLabel.setFont(Font.font("Arial", FontWeight.BOLD, 16));
 
         // Create a label for the score
+        Game.getInstance().setScore(0); // Reset score in the initialization
         Label actualScoreLabel = new Label(Integer.toString(Game.getInstance().getScore())); // Set the initial value
                                                                                              // directly
         actualScoreLabel.setId("actualScoreLabel");
@@ -355,7 +360,6 @@ public class GameFacade {
         // 10th layer (Score Box)
         sp.getChildren().add(scoreBox);
     }
-
 
     private void sceneToGame(Stage stage) {
 
@@ -372,14 +376,12 @@ public class GameFacade {
         // 1st layer of the stackpane
         sp.getChildren().add(pestLayer);
 
-
         setBackground(sp);
 
         setFurnitures(sp);
 
-        
         setLoggingBox(sp);
-        
+
         // Timer Box
         setTimerBox(sp);
 

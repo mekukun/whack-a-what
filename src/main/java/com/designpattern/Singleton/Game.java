@@ -54,7 +54,7 @@ public class Game {
         return score;
     }
 
-    public void renewGame(){
-        game_instance = new Game();
-    }
+    // public void renewGame(){
+    // game_instance = new Game();
+    // }
 }
