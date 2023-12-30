@@ -7,6 +7,8 @@ import com.designpattern.Entity.Furniture;
 import com.designpattern.Entity.Pest;
 import com.designpattern.Factory.FurnitureFactory;
 import com.designpattern.Factory.PestFactory;
+import com.designpattern.Observer.Timer;
+import com.designpattern.Observer.TimerSubscriber;
 import com.designpattern.Singleton.Game;
 import com.designpattern.Singleton.Leaderboard;
 import com.designpattern.Singleton.LeaderboardEntry;
@@ -44,15 +46,15 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class GameFacade {
-    private Timeline timer;
+    private Timer timer = new Timer();
     private Scene scene = App.scene;
     private static Furniture[] furnitures = new Furniture[5];
     private Stage stage;
 
     // Method to format time as mm:ss
-    private String formatTime(int seconds) {
-        return seconds + "s";
-    }
+    // private String formatTime(int seconds) {
+    // return seconds + "s";
+    // }
 
     private VBox StartScreenSetup() {
         VBox screen = new VBox(20);
@@ -315,25 +317,8 @@ public class GameFacade {
     }
 
     private void setTimer() {
-        timer = new Timeline(
-                new KeyFrame(Duration.seconds(1), event -> {
-                    Label timerLabel = (Label) Game.getInstance().getScene().lookup("#timerLabel");
-                    int remainingSeconds = Integer.parseInt(timerLabel.getText().replace("s", ""));
-                    remainingSeconds--;
-                    timerLabel.setText(formatTime(remainingSeconds));
-                    if (remainingSeconds == 10) {
-                        ImageView bleed = (ImageView) Game.getInstance().getScene().lookup("#bleed");
-                        ImageView bonusPest = (ImageView) Game.getInstance().getScene().lookup("#bonusPest");
-                        bleed.setVisible(true);
-                        bonusPest.setVisible(true);
-                    }
-                    if (remainingSeconds == 0) {
-                        timer.stop();
-                        Logger.getInstance().log("Game has ended!");
-                        showCongratsPopup();
-                    }
-                }));
-        timer.setCycleCount(Timeline.INDEFINITE);
+        new EndGameTimerSubscriber(timer);
+        timer.startTimer();
     }
 
     private void setClickThisBox(StackPane sp) {
@@ -442,4 +427,21 @@ public class GameFacade {
         // Create the pests
         createPest();
     }
+
+    public class EndGameTimerSubscriber extends TimerSubscriber {
+
+        Timer endGameTimer;
+
+        public EndGameTimerSubscriber(Timer timer) {
+            endGameTimer = timer;
+            endGameTimer.attachSubscribers_EndGame(this);
+        }
+
+        @Override
+        public void update() {
+            showCongratsPopup();
+        }
+
+    }
+
 }

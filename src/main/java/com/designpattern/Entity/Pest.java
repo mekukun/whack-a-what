@@ -47,7 +47,6 @@ public abstract class Pest {
 
             @Override
             public void handle(MouseEvent event) {
-                System.out.println("Tile pressed ");
                 performScore();
                 event.consume();
             }
