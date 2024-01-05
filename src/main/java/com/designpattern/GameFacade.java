@@ -317,6 +317,7 @@ public class GameFacade {
     }
 
     private void setTimer() {
+        timer = new Timer();
         new EndGameTimerSubscriber(timer);
         timer.startTimer();
     }
